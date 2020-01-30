@@ -1,2 +1,20 @@
 ---
 # vars file for setup-cluster-role
+  bastion: true
+
+  aws_region: us-east-1
+  aws_zones: us-east-1a,us-east-1b,us-east-1c
+
+  master_count: 3
+  master_volume_size: 50
+
+  network_cidr: 10.10.0.0/24
+
+  topology: private
+
+  cluster_name: csye6225-su19-baruam.me
+
+  state_store: s3://csye6225-su19-baruam.me
+
+  kubernetes_networking: amazon-vpc-routed-eni
+...
