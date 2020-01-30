@@ -27,10 +27,10 @@
     ssh_public_key: "{{ ssh_public_key | default('~/.ssh/id_rsa.pub') }}"
 
 - name: Configure the cluster
-  shell: "kops create cluster --bastion={{ bastion }} --cloud=aws --dns-zone={{ dns_zone }} --master-size={{ master_node_size }} --master-zones={{ master_zones|default(aws_zones) }} --master-count={{ master_count }} --network-cidr={{ network_cidr }} --networking={{ kubernetes_networking }}  --node-count={{ compute_node_count }} --topology={{ topology }} --zones={{ aws_zones }} --ssh-public-key={{ ssh_public_key }} --name={{ cluster_name }} --state {{ state_store }} --kubernetes-version {{ kubernetes_version }}"
+  shell: "AWS_PROFILE={{ profile }} kops create cluster --bastion={{ bastion }} --cloud=aws --dns-zone={{ dns_zone }} --master-size={{ master_node_size }} --master-zones={{ master_zones|default(aws_zones) }} --master-count={{ master_count }} --network-cidr={{ network_cidr }} --networking={{ kubernetes_networking }}  --node-count={{ compute_node_count }} --topology={{ topology }} --zones={{ aws_zones }} --ssh-public-key={{ ssh_public_key }} --name={{ cluster_name }} --state {{ state_store }} --kubernetes-version {{ kubernetes_version }}"
 
 - name: Create the physical cluster
-  shell: "kops update cluster {{ cluster_name }} --yes --state {{ state_store }}"
+  shell: "AWS_PROFILE={{ profile }} kops update cluster {{ cluster_name }} --yes --state {{ state_store }}"
 
 
 
