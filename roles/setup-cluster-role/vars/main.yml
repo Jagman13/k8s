@@ -12,9 +12,9 @@
 
   topology: private
 
-  cluster_name: csye6225-su19-baruam.me
+  cluster_name: csye6225-su19-kaurj.me
 
-  state_store: s3://csye6225-su19-baruam.me
+  state_store: s3://csye6225-kops-aws
 
   kubernetes_networking: amazon-vpc-routed-eni
 ...
