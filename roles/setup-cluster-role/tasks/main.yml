@@ -1,2 +1,37 @@
 ---
 # tasks file for setup-cluster-role
+
+#Setting kubernetes_version variable
+- name: Configure kubernetes_version variable
+  set_fact:
+    kubernetes_version: "{{ kubernetes_version | default('1.11.3') }}"
+
+- name: Configure Master Node Size variable
+  set_fact:
+    master_node_size: "{{ master_node_size | default('t2.small') }}"
+
+- name: Configure Compute Node Size variable
+  set_fact:
+    compute_node_size: "{{ compute_node_size | default('t2.small') }}"
+
+- name: Configure DNS Zone variable
+  set_fact:
+    dns_zone: "{{ dns_zone | default('csye6225-su19-baruam.me') }}"
+
+- name: Configure Compute Node Count variable
+  set_fact:
+    compute_node_count: "{{ compute_node_count | default(3) }}"
+
+- name: Configure SSH public key
+  set_fact:
+    ssh_public_key: "{{ ssh_public_key | default('~/.ssh/id_rsa.pub') }}"
+
+- name: Configure the cluster
+  shell: "kops create cluster --bastion={{ bastion }} --cloud=aws --dns-zone={{ dns_zone }} --master-size={{ master_node_size }} --master-zones={{ master_zones|default(aws_zones) }} --master-count={{ master_count }} --network-cidr={{ network_cidr }} --networking={{ kubernetes_networking }}  --node-count={{ compute_node_count }} --topology={{ topology }} --zones={{ aws_zones }} --ssh-public-key={{ ssh_public_key }} --name={{ cluster_name }} --state {{ state_store }} --kubernetes-version {{ kubernetes_version }}"
+
+- name: Create the physical cluster
+  shell: "kops update cluster {{ cluster_name }} --yes --state {{ state_store }}"
+
+
+
+
