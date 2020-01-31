@@ -52,7 +52,7 @@
     - "{{env == 'prod'}}"
 
 - name: Configure the cluster
-  shell: "AWS_PROFILE={{ profile }} kops create cluster -out --bastion={{ bastion }} --cloud=aws --dns-zone={{ dns_zone }} --master-size={{ master_node_size }} --networking={{ kubernetes_networking }}  --node-count={{ compute_node_count }} --topology={{ topology }} --zones={{az_array | join(',')}} --ssh-public-key={{ ssh_public_key }} --name={{ cluster_name }} --state {{ state_store }} --kubernetes-version {{ kubernetes_version }}"
+  shell: "AWS_PROFILE={{ profile }} kops create cluster -out --bastion={{ bastion }} --cloud=aws --dns-zone={{ dns_zone }} --master-size={{ master_node_size }} --networking={{ kubernetes_networking }}  --node-count={{ compute_node_count }} --topology={{ topology }} --zones={{az_array | join(',')}} --master-zones={{az_array | join(',')}} --ssh-public-key={{ ssh_public_key }} --name={{ cluster_name }} --state {{ state_store }} --kubernetes-version {{ kubernetes_version }}"
 
 - name: Create the physical cluster
   shell: "AWS_PROFILE={{ profile }} kops update cluster {{ cluster_name }} --yes --state {{ state_store }}"
