@@ -18,16 +18,41 @@
   set_fact:
     dns_zone: "{{ dns_zone | default('csye6225-su19-baruam.me') }}"
 
-- name: Configure Compute Node Count variable
-  set_fact:
-    compute_node_count: "{{ compute_node_count | default(1) }}"
-
 - name: Configure SSH public key
   set_fact:
     ssh_public_key: "{{ ssh_public_key | default('~/.ssh/id_rsa.pub') }}"
 
+- name: Retrieve all AZ in region {{ aws_region }}
+  aws_az_facts:
+    region: "{{ aws_region }}"
+  register: regions_azs
+
+- name: Configure prod AZ count
+  set_fact:
+    az_count: "{{ prod_az_count }}"
+  when: "{{env == 'prod'}}"
+
+- name: Retrieve AZ names
+  set_fact:
+    az_array: "{{az_array}} + [ '{{ item.zone_name }}' ]"
+  loop: "{{ regions_azs.availability_zones }}"
+  loop_control:
+    index_var: indx
+  when: "{{ indx <= az_count|default(1)|int-1}}"
+
+- name: Configure dev Compute Node Count variable
+  set_fact:
+    compute_node_count:  "{{ compute_node_count | default(1) }}"
+  when: "{{env == 'dev'}}"
+
+- name: Configure prod Compute Node Count variable
+  set_fact:
+    compute_node_count:  "{{ (compute_node_count is defined and compute_node_count > 3) |ternary(compute_node_count,3) }}"
+  when:
+    - "{{env == 'prod'}}"
+
 - name: Configure the cluster
-  shell: "AWS_PROFILE={{ profile }} kops create cluster -out --bastion={{ bastion }} --cloud=aws --dns-zone={{ dns_zone }} --master-size={{ master_node_size }} --master-zones={{ master_zones|default(aws_zones) }} --master-count={{ master_count }} --networking={{ kubernetes_networking }}  --node-count={{ compute_node_count }} --topology={{ topology }} --zones={{ aws_zones }} --ssh-public-key={{ ssh_public_key }} --name={{ cluster_name }} --state {{ state_store }} --kubernetes-version {{ kubernetes_version }}"
+  shell: "AWS_PROFILE={{ profile }} kops create cluster -out --bastion={{ bastion }} --cloud=aws --dns-zone={{ dns_zone }} --master-size={{ master_node_size }} --networking={{ kubernetes_networking }}  --node-count={{ compute_node_count }} --topology={{ topology }} --zones={{az_array | join(',')}} --master-zones={{az_array | join(',')}} --ssh-public-key={{ ssh_public_key }} --name={{ cluster_name }} --state {{ state_store }} --kubernetes-version {{ kubernetes_version }}"
 
 - name: Create the physical cluster
   shell: "AWS_PROFILE={{ profile }} kops update cluster {{ cluster_name }} --yes --state {{ state_store }}"
