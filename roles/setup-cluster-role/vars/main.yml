@@ -3,12 +3,14 @@
   bastion: true
 
   aws_region: us-east-1
-  aws_zones: us-east-1a
 
-  master_count: 1
   master_volume_size: 50
 
   topology: private
 
   kubernetes_networking: amazon-vpc-routed-eni
+
+  prod_az_count: 3
+  env: dev
+  az_array: []
 ...
