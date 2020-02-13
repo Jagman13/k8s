@@ -61,7 +61,7 @@
       - proto: tcp
         from_port: 5432
         to_port: 5432
-        cidr_ip: "{{ k8_vpcinfo.vpcs[0].cidr_block }}"
+        cidr_ip: "{{ k8s_vpcinfo.vpcs[0].cidr_block }}"
   register: security_group
 
 - name: Create rds instance
