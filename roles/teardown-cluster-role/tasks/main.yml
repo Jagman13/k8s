@@ -1,5 +1,58 @@
 ---
 # tasks file for teardown-cluster-role
 
+- name: List all vpc peers
+  ec2_vpc_peering_info:
+    region: "{{ aws_region }}"
+    profile: dev
+    filters:
+      "tag:Name": Peering
+  register: vpc_peer
+
+- debug: var=vpc_peer
+
+- name: delete a local VPC peering Connection
+  ec2_vpc_peer:
+    region: "{{ aws_region }}"
+    peering_id: "{{ vpc_peer.result[0].vpc_peering_connection_id }}"
+    profile: "{{aws_profile}}"
+    state: absent
+  when: vpc_peer.result|length != 0
+  register: vpc_peer
+
+- name: delete rds
+  rds:
+    command: delete
+    profile: "{{aws_profile}}"
+    region: "{{ aws_region }}"
+    instance_name: "{{ rds_instancename }}"
+    wait: yes
+
+- name: Delete RDS subnet
+  rds_subnet_group:
+    state: absent
+    profile: "{{aws_profile}}"
+    region: "{{ aws_region }}"
+    name: "{{rds_subnetgroup}}"
+
+- name: Security group info
+  ec2_group_info:
+    profile: "{{aws_profile}}"
+    region: "{{ aws_region }}"
+    filters:
+      group-name: "{{ rds_securitygroup }}"
+  register: security_details
+
+- debug : var=security_details
+
+- name: Delete security group
+  ec2_group:
+    description: Ec2 Security group
+    region: "{{ aws_region }}"
+    profile: "{{aws_profile}}"
+    group_id: "{{security_details.security_groups[0].group_id}}"
+    state: absent
+
+
 - name: Delete the cluster
   shell: AWS_PROFILE="{{ profile }}" kops delete cluster --name="{{ cluster_name }}" --state=s3://"{{ state_store }}" --yes 

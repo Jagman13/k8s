@@ -1,0 +1,20 @@
+---
+# vars file for create-rds-role
+
+aws_region: us-east-1
+
+rds_dbname : thunderstorm
+
+rds_instancename: "csye7374-sp20"
+
+rds_username: "csye7374master"
+
+rds_password: "csye7374password"
+
+rds_subnetgroup: "RDS Subnet Group"
+
+cluster_name: "k8s.dev.csye6225-su19-kaurj.me"
+
+aws_profile: "dev"
+
+rds_securitygroup: "RDS Server"
