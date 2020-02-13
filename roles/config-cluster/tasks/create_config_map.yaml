@@ -1,0 +1,10 @@
+#Creating Configuration Map for setting environment variable
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: env-config
+  namespace: api
+data:
+  DATABASE_URL: postgres://XXXXXX:YYYYYYYYYY@ZZZZZZZZZZZ:5432/thunderstorm
+  RDS: test_rds
+  USERNAME: test_username
