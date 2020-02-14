@@ -1,0 +1,4 @@
+---
+# vars file for frontend-manifest
+
+backendurl: "backendloadbalancerexternalip"
