@@ -70,7 +70,7 @@
     instance_name:  "{{ rds_instancename }}"
     instance_type: db.t2.micro
     db_engine:  postgres
-    profile: dev
+    profile: "{{ aws_profile}}"
     db_name: "{{ rds_dbname }}"
     size: "20"
     multi_zone: no
