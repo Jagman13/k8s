@@ -6,7 +6,7 @@
   shell: "kubectl apply -f roles/frontend-manifest/tasks/create_secret.yaml"
 
 - name: Get Backend service ip
-  shell: "kubectl describe services apiservice --namespace=api | grep elb.amazonaws.com | grep LoadBalancer | awk '{print $3}'"
+  shell: "kubectl describe services api-service --namespace=api | grep elb.amazonaws.com | grep LoadBalancer | awk '{print $3}'"
   register: backendip
 
 - name: Configure backend url

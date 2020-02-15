@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: userinterface-recipeapp
-          image: yogitapatil/front_end:645b013d8d84caa6b6fe06373cc107ba350262cd
+          image: baruamayank92/front-end:b7cc86b39cf1ac2b24e9f7d74f2e9c101fa9b95f
           env:
             - name: REACT_APP_BACKENDURL
               valueFrom:
@@ -48,6 +48,6 @@ spec:
       initContainers:
         - name: init-backendservice
           image: busybox
-          command: ['sh', '-c', 'until nslookup apiservice.api.svc.cluster.local; do echo waiting for apiservice.api; sleep 2; done;']
+          command: ['sh', '-c', 'until nslookup api-service.api.svc.cluster.local; do echo waiting for apiservice.api; sleep 2; done;']
       imagePullSecrets:
         - name: regcred
