@@ -1,0 +1,96 @@
+---
+# tasks file for vpc-peering-role
+- name: get default vpc id
+  ec2_vpc_net_info:
+    region: "{{ aws_region }}"
+    filters:
+      isDefault: "true"
+    profile: "{{ aws_profile}}"
+  register: default_vpcinfo
+
+- name: get k8s vpc id
+  ec2_vpc_net_info:
+    region: "{{ aws_region }}"
+    filters:
+      "tag:Name": "{{ cluster_name }}"
+    profile: "{{ aws_profile}}"
+  register: k8s_vpcinfo
+
+- name: Create local account VPC peering Connection
+  ec2_vpc_peer:
+    region: "{{ aws_region}}"
+    vpc_id: "{{ k8s_vpcinfo.vpcs[0].vpc_id }}"
+    peer_vpc_id: "{{ default_vpcinfo.vpcs[0].vpc_id }}"
+    state: present
+    profile: "{{ aws_profile}}"
+    tags:
+      Name: Peering
+  register: vpc_peer
+
+- name: Accept local VPC peering request
+  ec2_vpc_peer:
+    region: "{{ aws_region}}"
+    peering_id: "{{ vpc_peer.peering_id }}"
+    state: accept
+    profile: "{{ aws_profile}}"
+  register: action_peer
+
+- name: Get k8s route table details
+  ec2_vpc_route_table_info:
+    region: "{{ aws_region }}"
+    filters:
+      "tag:Name": "{{ cluster_name }}"
+    profile: "{{ aws_profile}}"
+  register: k8s_routedetails
+
+- name: Get default route table details
+  ec2_vpc_route_table_info:
+    region: "{{ aws_region }}"
+    filters:
+      vpc-id: "{{ default_vpcinfo.vpcs[0].vpc_id }}"
+    profile: "{{ aws_profile}}"
+  register: default_routedetails
+
+- name: Gather information about all Internet Gateways for an account or profile
+  ec2_vpc_igw_info:
+    region: "{{ aws_region }}"
+    profile: "{{ aws_profile}}"
+    filters:
+      attachment.vpc-id: "{{ default_vpcinfo.vpcs[0].vpc_id }}"
+  register: default_igw
+
+- name: Gather information about all Internet Gateways for an account or profile
+  ec2_vpc_igw_info:
+    region: "{{ aws_region }}"
+    profile: "{{ aws_profile}}"
+    filters:
+      attachment.vpc-id: "{{ k8s_vpcinfo.vpcs[0].vpc_id }}"
+  register: k8s_igw
+
+- name: Setting up default env peering route
+  ec2_vpc_route_table:
+    region: "{{ aws_region }}"
+    vpc_id: "{{ default_vpcinfo.vpcs[0].vpc_id }}"
+    route_table_id: "{{ default_routedetails.route_tables[0].id }}"
+    lookup: id
+    profile: "{{ aws_profile}}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ default_igw.internet_gateways[0].internet_gateway_id }}"
+      - dest: "{{k8s_vpcinfo.vpcs[0].cidr_block }}"
+        vpc_peering_connection_id: "{{ action_peer.peering_id }}"
+
+
+
+- name: Setting up k8s vpc peering route
+  ec2_vpc_route_table:
+    region: "{{ aws_region }}"
+    vpc_id: "{{ k8s_vpcinfo.vpcs[0].vpc_id }}"
+    route_table_id: "{{k8s_routedetails.route_tables[0].id}}"
+    lookup: id
+    profile: "{{ aws_profile}}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ k8s_igw.internet_gateways[0].internet_gateway_id }}"
+      - dest: "{{default_vpcinfo.vpcs[0].cidr_block }}"
+        vpc_peering_connection_id: "{{ action_peer.peering_id }}"

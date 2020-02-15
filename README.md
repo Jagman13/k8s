@@ -18,10 +18,15 @@ To create the cluster run following
 ```bash
 $ ansible-playbook setup-k8s-cluster.yaml --extra-vars "dns_zone=value state_store=value cluster_name=value profile=kops"
 ```
-
-To delete the cluster run following
+To create the cluster run following
 
 ```bash
-$ ansible-playbook delete-k8s-cluster.yaml --extra-vars "dns_zone=value state_store=value cluster_name=value profile=value"
+$ ansible-playbook create-rds-and-peering.yaml --extra-vars "env=default/dev/prod cluster_name=value"
+```
+
+To delete the all the resources run following
+
+```bash
+$ ansible-playbook delete-k8s-cluster.yaml --extra-vars "profile=value env=default/dev/prod cluster_name=value state_store=value ssh_public_key=value"
 ```
 

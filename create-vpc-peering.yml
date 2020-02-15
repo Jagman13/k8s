@@ -4,4 +4,4 @@
   tasks:
 
     - import_role:
-        name: roles/create-rds-role
+        name: roles/vpc-peering-role
