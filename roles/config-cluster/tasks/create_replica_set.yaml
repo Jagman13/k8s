@@ -19,10 +19,21 @@ spec:
     spec:
       containers:
         - name: private-reg-container
-          image: baruamayank92/back-end:5f990b3346aa4732041c2d5f3e465aff9967a60f
+          image: baruamayank92/back-end:ac81292bee48b4847f4c9a0b95d78e665376bc8e
           envFrom:
             - configMapRef:
                 name: env-config
+          env:
+            - name: RDS_USER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: rdscred
+                  key: username
+            - name: RDS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rdscred
+                  key: password
           ports:
             - containerPort: 3000
           readinessProbe:
