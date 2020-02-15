@@ -1,0 +1,57 @@
+#Replica set to deploy docker image
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: backend
+  namespace: api
+  labels:
+    app: webapp
+    tier: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: backend
+  template:
+    metadata:
+      labels:
+        tier: backend
+    spec:
+      containers:
+        - name: private-reg-container
+          image: baruamayank92/back-end:ac81292bee48b4847f4c9a0b95d78e665376bc8e
+          envFrom:
+            - configMapRef:
+                name: env-config
+          env:
+            - name: RDS_USER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: rdscred
+                  key: username
+            - name: RDS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rdscred
+                  key: password
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /howyoudoin
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /howyoudoin
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "250Mi"
+            limits:
+              memory: "500Mi"
+      imagePullSecrets:
+        - name: regcred

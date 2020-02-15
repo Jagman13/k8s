@@ -1,0 +1,22 @@
+---
+# tasks file for delete-vpc-peering-role
+
+- name: List all vpc peers
+  ec2_vpc_peering_info:
+    region: "{{ aws_region }}"
+    profile: "{{ env }}"
+    filters:
+      "tag:Name": Peering
+      "status-code": active
+  register: vpc_peer
+
+- debug: var=vpc_peer
+
+- name: delete a local VPC peering Connection
+  ec2_vpc_peer:
+    region: "{{ aws_region }}"
+    peering_id: "{{ vpc_peer.result[0].vpc_peering_connection_id }}"
+    profile: "{{ env }}"
+    state: absent
+  when: vpc_peer.result|length != 0
+  register: vpc_peer

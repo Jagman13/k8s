@@ -1,0 +1,11 @@
+---
+# vars file for teardown-rds-role
+
+
+aws_region: us-east-1
+
+rds_instancename: "csye7374-sp20"
+
+rds_subnetgroup: "RDS_Subnet_Group"
+
+rds_securitygroup: "RDS_Security_Group"

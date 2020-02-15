@@ -3,5 +3,15 @@
   gather_facts: false
   tasks:
 
-  - import_role: 
+  - name : delete vpc peering
+    import_role:
+      name: roles/delete-vpc-peering-role
+
+  - name: delete cluster
+    import_role:
+      name: roles/teardown-rds-role
+
+  - name: delete cluster
+    import_role:
       name: roles/teardown-cluster-role
+

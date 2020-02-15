@@ -1,0 +1,25 @@
+---
+- name: Creating Name Space
+  shell: "kubectl apply -f roles/frontend-manifest/tasks/name_space.yaml"
+
+- name: Creating Secret
+  shell: "kubectl apply -f roles/frontend-manifest/tasks/create_secret.yaml"
+
+- name: Get Backend service ip
+  shell: "kubectl describe services api-service --namespace=api | grep elb.amazonaws.com | grep LoadBalancer | awk '{print $3}'"
+  register: backendip
+
+- name: Configure backend url
+  set_fact:
+    backendurl: "http://{{ backendip.stdout }}:3000"
+
+- name: Create configmap
+  shell: "kubectl create configmap backend-config-map --from-literal=BACKENDURL={{ backendurl }} --namespace=ui --dry-run -o yaml | kubectl apply -f -"
+
+- name: Creating Load Balancer
+  shell: "kubectl apply -f roles/frontend-manifest/tasks/create_load_balancer.yaml"
+
+- name: Creating Replica Set
+  shell: "kubectl apply -f roles/frontend-manifest/tasks/create_replica_set.yaml"
+...
+

@@ -2,4 +2,4 @@
 # tasks file for teardown-cluster-role
 
 - name: Delete the cluster
-  shell: AWS_PROFILE="{{ profile }}" kops delete cluster --name="{{ cluster_name }}" --state=s3://"{{ state_store }}" --yes 
+  shell: AWS_PROFILE="{{ profile }}" kops delete cluster --name="{{ cluster_name }}" --state=s3://"{{ state_store }}" --yes

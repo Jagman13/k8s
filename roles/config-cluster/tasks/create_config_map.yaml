@@ -1,0 +1,9 @@
+#Creating Configuration Map for setting environment variable
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: env-config
+  namespace: api
+data:
+  RDS_CONNECTION_STRING: csye7374-sp20.cn8qdtm1aa14.us-east-1.rds.amazonaws.com
+  RDS_DB_NAME: thunderstorm

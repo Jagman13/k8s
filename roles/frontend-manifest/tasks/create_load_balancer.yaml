@@ -1,0 +1,14 @@
+#Creating Load Balancer Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui-service
+  namespace: ui
+  labels:
+    app: userinterface
+spec:
+  selector:
+    tier: frontend
+  ports:
+    - port: 4000
+  type: LoadBalancer
