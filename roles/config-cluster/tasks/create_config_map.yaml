@@ -7,3 +7,4 @@ metadata:
 data:
   RDS_CONNECTION_STRING: csye7374-sp20.cn8qdtm1aa14.us-east-1.rds.amazonaws.com
   RDS_DB_NAME: thunderstorm
+  S3_BUCKET_NAME: webapp-images
