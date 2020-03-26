@@ -16,9 +16,9 @@ Open terminal and run the ```ansible-playbook``` command in the below format wit
 To create the cluster run following
 
 ```bash
-$ ansible-playbook setup-k8s-cluster.yaml --extra-vars "dns_zone=value state_store=value cluster_name=value profile=kops"
+$ ansible-playbook setup-k8s-cluster.yaml --extra-vars "dns_zone=value state_store=value cluster_name=value profile=kops env=prod metricsServer_releaseName=k8smertricsserver"
 ```
-To create the cluster run following
+To create the rds and vpc peering run following
 
 ```bash
 $ ansible-playbook create-rds-and-peering.yaml --extra-vars "env=default/dev/prod cluster_name=value"
