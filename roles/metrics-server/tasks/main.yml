@@ -1,0 +1,3 @@
+---
+- name: Install Metrics Server
+  shell: "helm install {{ metricsServer_releaseName }} roles/metrics-server/tasks/metrics-server"
