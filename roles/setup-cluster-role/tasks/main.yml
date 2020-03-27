@@ -51,32 +51,35 @@
   when:
     - "{{env == 'prod'}}"
 
+- name: Add repo for yq
+  apt_repository:
+    repo: 'ppa:rmescandon/yq'
+    state: present
+
 - name: Install yq
-  become: yes
-  script: roles/setup-cluster-role/templates/yq.sh
+  apt: name=yq state=latest force=yes
 
 - name: Change file permissions
-  become: yes
   shell: chmod 777 roles/setup-cluster-role/templates/yq-merge-editor.sh
 
-- name: Configure the cluster
-  shell: "AWS_PROFILE={{ profile }} kops create cluster -out --bastion={{ bastion }} --cloud=aws --dns-zone={{ dns_zone }} --master-size={{ master_node_size }} --node-size={{ compute_node_size }} --networking={{ kubernetes_networking }}  --node-count={{ compute_node_count }} --topology={{ topology }} --zones={{az_array | join(',')}} --master-zones={{az_array | join(',')}} --ssh-public-key={{ ssh_public_key }} --name={{ cluster_name }} --state {{ state_store }} --kubernetes-version {{ kubernetes_version }}"
-
-- name: Setting authenticationTokenWebhook specs
-  shell: "AWS_PROFILE={{ profile }} KOPS_FEATURE_FLAGS=SpecOverrideFlag kops set cluster --name={{ cluster_name }} spec.kubelet.authenticationTokenWebhook=true --state {{ state_store }}"
-
-- name: Setting authorizationMode specs
-  shell: "AWS_PROFILE={{ profile }} KOPS_FEATURE_FLAGS=SpecOverrideFlag kops set cluster --name={{ cluster_name }} spec.kubelet.authorizationMode=Webhook --state {{ state_store }}"
-
-- name: Edit Instance group maxsize
-  shell: "EDITOR='./roles/setup-cluster-role/templates/yq-merge-editor.sh roles/setup-cluster-role/templates/spec.yml' AWS_PROFILE={{ profile }} kops edit instancegroups nodes --state {{ state_store }} --name {{ cluster_name }}"
-
-- name: Create the physical cluster
-  shell: "AWS_PROFILE={{ profile }} kops update cluster {{ cluster_name }} --yes --state {{ state_store }}"
-
-- name: Validate cluster
-  shell: "AWS_PROFILE={{ profile }} kops validate cluster --name={{ cluster_name }} --state={{ state_store }}"
-  register: status
-  until: status.stdout.find('Your cluster '+ cluster_name +' is ready')  !=  -1
-  retries: 20
-  delay: 60
+#- name: Configure the cluster
+#  shell: "AWS_PROFILE={{ profile }} kops create cluster -out --bastion={{ bastion }} --cloud=aws --dns-zone={{ dns_zone }} --master-size={{ master_node_size }} --node-size={{ compute_node_size }} --networking={{ kubernetes_networking }}  --node-count={{ compute_node_count }} --topology={{ topology }} --zones={{az_array | join(',')}} --master-zones={{az_array | join(',')}} --ssh-public-key={{ ssh_public_key }} --name={{ cluster_name }} --state {{ state_store }} --kubernetes-version {{ kubernetes_version }}"
+#
+#- name: Setting authenticationTokenWebhook specs
+#  shell: "AWS_PROFILE={{ profile }} KOPS_FEATURE_FLAGS=SpecOverrideFlag kops set cluster --name={{ cluster_name }} spec.kubelet.authenticationTokenWebhook=true --state {{ state_store }}"
+#
+#- name: Setting authorizationMode specs
+#  shell: "AWS_PROFILE={{ profile }} KOPS_FEATURE_FLAGS=SpecOverrideFlag kops set cluster --name={{ cluster_name }} spec.kubelet.authorizationMode=Webhook --state {{ state_store }}"
+#
+#- name: Edit Instance group maxsize
+#  shell: "EDITOR='./roles/setup-cluster-role/templates/yq-merge-editor.sh roles/setup-cluster-role/templates/spec.yml' AWS_PROFILE={{ profile }} kops edit instancegroups nodes --state {{ state_store }} --name {{ cluster_name }}"
+#
+#- name: Create the physical cluster
+#  shell: "AWS_PROFILE={{ profile }} kops update cluster {{ cluster_name }} --yes --state {{ state_store }}"
+#
+#- name: Validate cluster
+#  shell: "AWS_PROFILE={{ profile }} kops validate cluster --name={{ cluster_name }} --state={{ state_store }}"
+#  register: status
+#  until: status.stdout.find('Your cluster '+ cluster_name +' is ready')  !=  -1
+#  retries: 20
+#  delay: 60
