@@ -8,11 +8,11 @@
 
 - name: Configure Master Node Size variable
   set_fact:
-    master_node_size: "{{ master_node_size | default('t2.small') }}"
+    master_node_size: "{{ master_node_size | default('t2.medium') }}"
 
 - name: Configure Compute Node Size variable
   set_fact:
-    compute_node_size: "{{ compute_node_size | default('t2.small') }}"
+    compute_node_size: "{{ compute_node_size | default('t2.medium') }}"
 
 - name: Configure DNS Zone variable
   set_fact:
@@ -50,15 +50,6 @@
     compute_node_count:  "{{ (compute_node_count is defined and compute_node_count > 3) |ternary(compute_node_count,3) }}"
   when:
     - "{{env == 'prod'}}"
-
-- name: Add repo for yq
-  apt_repository:
-    repo: 'ppa:rmescandon/yq'
-    state: present
-
-- name: Install yq
-  become: true
-  apt: name=yq state=present update_cache=yes force_apt_get=yes
 
 - name: Change file permissions
   shell: chmod 777 roles/setup-cluster-role/templates/yq-merge-editor.sh
