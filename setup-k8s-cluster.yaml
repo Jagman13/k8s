@@ -11,3 +11,6 @@
 
   - import_role:
       name: roles/cluster-autoscaler
+
+  - import_role:
+      name: roles/install-nginx

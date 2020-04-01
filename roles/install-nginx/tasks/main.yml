@@ -1,0 +1,8 @@
+---
+# tasks file for install-nginx
+
+- name: Add Ngnix Repo
+  shell: "helm repo add stable https://kubernetes-charts.storage.googleapis.com/"
+
+- name: Install Nginx
+  shell: "helm install ingress stable/nginx-ingress --set controller.hostNetwork=true,controller.kind=DaemonSet"
